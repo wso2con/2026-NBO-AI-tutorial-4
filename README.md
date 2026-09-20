@@ -13,7 +13,7 @@ Four modules, each adding a governance layer on top of the last —
 |---|---|---|---|
 | [01 — LLM Governance](01-llm-governance/README.md) | ~20 min | What the model says and costs: PII masking, cost-based rate limiting, per-agent prompt decorators on the LLM gateway. | Same LLM gateway, two agents, two different appended compliance/audit lines — purely from which decorator is attached. |
 | [02 — MCP Tool Governance](02-mcp-tool-governance/README.md) | ~15 min | Routes MCP tool calls through Agent Manager's MCP gateway (shared API Key). No per-agent policy yet. | Both agents now reach the Accounts MCP server only through the gateway — but still share one key, so tool access is still unrestricted. |
-| [03 — AgentID and OAuth2](03-agentid-and-oauth2/README.md) | ~35 min | **Part A:** OAuth2/Asgardeo secures the `/chat` endpoint itself (caller identity). **Part B:** each agent gets its own AgentID identity; Agent Manager's MCP gateway enforces per-agent, per-tool policy. | Identical prompt ("open a savings account for cust-2") sent to both agents: Account Assistant succeeds, Customer Support is now **denied** — same code, only the AgentID role differs. |
+| 03 — AgentID and OAuth2 ([Part A](03-agentid-and-oauth2/03-1-OAuth2/README.md) · [Part B](03-agentid-and-oauth2/03-2-AgentID/README.md)) | ~35 min | **Part A:** OAuth2/Asgardeo secures the `/chat` endpoint itself (caller identity). **Part B:** each agent gets its own AgentID identity; Agent Manager's MCP gateway enforces per-agent, per-tool policy. | Identical prompt ("open a savings account for cust-2") sent to both agents: Account Assistant succeeds, Customer Support is now **denied** — same code, only the AgentID role differs. |
 | [04 — Agent Catalog](04-agent-catalog/README.md) | ~15 min | Publishing a governed agent's build as a reusable, versioned Agent Kind. Code is reused; configuration, secrets, and AgentID identity are not. | A new agent created from the Kind starts with **zero MCP tool access** until its own AgentID is walked through Module 03 Part B again. |
 
 See [`demo_script.md`](demo_script.md) for the exact prompts to run live at
@@ -169,13 +169,13 @@ as you bind the agent to providers/servers in the console — **no manual
    registered with **API Key** security) → it injects `MCP_GATEWAY_URL` +
    `MCP_GATEWAY_API_KEY`. Every agent bound this way shares the same key —
    no per-agent tool policy yet.
-4. To move to AgentID-governed MCP ([Module 03, Part B](03-agentid-and-oauth2/README.md)):
+4. To move to AgentID-governed MCP ([Module 03, Part B](03-agentid-and-oauth2/03-2-AgentID/README.md)):
    switch that MCP server's security scheme to **OAuth2**, look up the
    agent's own **Agent ID** in the console, and assign it a role scoped to
    the tools it should be allowed to call. Agent Manager then swaps
    `MCP_GATEWAY_API_KEY` out for that agent's own `AMP_AGENTID_CLIENT_*`
    vars.
-5. To add caller-identity OAuth2 on `/chat` itself ([Module 03, Part A](03-agentid-and-oauth2/README.md)):
+5. To add caller-identity OAuth2 on `/chat` itself ([Module 03, Part A](03-agentid-and-oauth2/03-1-OAuth2/README.md)):
    select **OAuth2** as the agent's security scheme and pick the
    registered Asgardeo key manager — no env var change needed.
 6. **Deploy.**
@@ -185,7 +185,8 @@ env-var-injection table are in each agent's own README
 ([Customer Support](agents/customer_support/README.md#deploy-to-agent-manager),
 [Account Assistant](agents/account_assistant/README.md#deploy-to-agent-manager))
 and in [Module 01](01-llm-governance/README.md), [Module 02](02-mcp-tool-governance/README.md),
-and [Module 03](03-agentid-and-oauth2/README.md).
+and Module 03 ([Part A](03-agentid-and-oauth2/03-1-OAuth2/README.md) ·
+[Part B](03-agentid-and-oauth2/03-2-AgentID/README.md)).
 
 ## Demo script
 
