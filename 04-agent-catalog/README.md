@@ -90,13 +90,13 @@ secrets, set independently.
      agent's tool access starts from nothing and is configured fresh,
      exactly as in [Module 02](../02-mcp-tool-governance/README.md)
      (gateway connectivity) and
-     [Module 03, Part B](../03-agentid-and-oauth2/README.md) (per-tool
+     [Module 03, Part B](../03-agentid-and-oauth2/03-2-AgentID/README.md) (per-tool
      AgentID policy).
    - **Environment Variables** — key/value pairs, each with its own
      **Mark as Secret** checkbox. Nothing here is pre-populated from the
      original agent's `.env` — set `OPENAI_API_KEY`, `MCP_SERVER_URL` /
      `MCP_GATEWAY_URL`, `AMP_AGENTID_*`, etc. independently, per
-     [Module 01](../01-llm-governance/README.md)–[03](../03-agentid-and-oauth2/README.md)'s
+     [Module 01](../01-llm-governance/README.md)–[03](../03-agentid-and-oauth2/03-1-OAuth2/README.md)'s
      env var tables.
    - **File Mounts (Optional)** — mount files into the instance if the
      kind's code expects any.
@@ -148,4 +148,4 @@ secrets, set independently.
 
 ---
 
-Previous: [Module 03 — AgentID and OAuth2](../03-agentid-and-oauth2/README.md)
+Previous: [Module 03, Part B — AgentID](../03-agentid-and-oauth2/03-2-AgentID/README.md)

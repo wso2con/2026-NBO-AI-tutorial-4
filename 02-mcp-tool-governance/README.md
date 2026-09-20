@@ -9,7 +9,7 @@ Agent Manager's **MCP gateway**, secured with a default **API Key**. No
 AgentID, no per-tool scopes or roles yet — this module is only about
 standing the gateway up and proving the same unmodified MCP server is
 now reachable only through it. Per-agent, per-tool access control is
-[Module 03](../03-agentid-and-oauth2/README.md).
+[Module 03, Part B](../03-agentid-and-oauth2/03-2-AgentID/README.md).
 
 This is where the demo moves each agent from **direct MCP mode**
 (`MCP_GATEWAY_URL` unset, calls go straight to the MCP server) to
@@ -149,4 +149,4 @@ closed in Module 03, once each agent gets its own AgentID identity.
 ---
 
 Previous: [Module 01 — LLM Governance](../01-llm-governance/README.md) ·
-Next: [Module 03 — AgentID and OAuth2](../03-agentid-and-oauth2/README.md)
+Next: [Module 03, Part A — OAuth2](../03-agentid-and-oauth2/03-1-OAuth2/README.md)

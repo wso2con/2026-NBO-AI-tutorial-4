@@ -7,7 +7,7 @@ import SignInGate from "./components/SignInGate.jsx";
 import UserBadge from "./components/UserBadge.jsx";
 import { useHealth } from "./hooks/useHealth.js";
 import { streamChat } from "./lib/streamChat.js";
-import { agentBaseUrl, isAsgardeoConfigured } from "./authConfig.js";
+import { agentBaseUrl, apiKey, isAsgardeoConfigured } from "./authConfig.js";
 
 function randomSessionId(prefix) {
   return prefix + "-" + Math.random().toString(36).slice(2, 10);
@@ -60,7 +60,8 @@ function SupportConsole() {
       sessionRef.current,
       text,
       (partial) => updateMessage(id, { text: partial }),
-      accessToken
+      accessToken,
+      apiKey
     );
 
     updateMessage(id, { text: finalText, outcome, streaming: false });

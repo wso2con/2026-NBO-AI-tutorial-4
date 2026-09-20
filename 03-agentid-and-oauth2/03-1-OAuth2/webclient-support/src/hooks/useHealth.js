@@ -11,8 +11,8 @@ export function useHealth(getUrl, { intervalMs = 8000 } = {}) {
     const base = getUrlRef.current().trim().replace(/\/+$/, "");
     try {
       const res = await fetch(base + "/health", { cache: "no-store" });
-      if (!res.ok) throw new Error("bad status");
-      const data = await res.json();
+      if (res.status === 503) throw new Error("unavailable");
+      const data = await res.json().catch(() => ({}));
       setStatus({
         state: "up",
         label: (data.stage || "agent") + " / " + (data.agent || "agent") + (data.governed ? " / governed" : " / direct"),

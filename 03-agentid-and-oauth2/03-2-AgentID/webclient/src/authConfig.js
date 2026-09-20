@@ -11,5 +11,3 @@ export const isAsgardeoConfigured =
   Boolean(asgardeoConfig.clientID) &&
   !asgardeoConfig.baseUrl.includes("<") &&
   !asgardeoConfig.clientID.includes("<");
-
-export const agentBaseUrl = import.meta.env.VITE_AGENT_BASE_URL || "http://localhost:8000";

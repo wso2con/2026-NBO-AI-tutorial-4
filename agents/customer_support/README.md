@@ -15,7 +15,7 @@ mode:
 In direct MCP mode, and still in x-api-key gateway mode, this agent can
 call `open_account` / `transfer_money` even though it's outside its
 intended scope — that's the gap
-[Module 03, Part B](../../03-agentid-and-oauth2/README.md) closes. Once
+[Module 03, Part B](../../03-agentid-and-oauth2/03-2-AgentID/README.md) closes. Once
 tool policy is configured on the AgentID this agent authenticates with,
 those same calls are expected to be **denied**.
 
@@ -77,13 +77,13 @@ Steps:
    **API Key** security — no AgentID yet, every agent uses the same key.
    `MCP_GATEWAY_URL` and `MCP_GATEWAY_API_KEY` are then injected by Agent
    Manager, no manual env var entry needed.
-4. For [Module 03, Part B](../../03-agentid-and-oauth2/README.md)'s
+4. For [Module 03, Part B](../../03-agentid-and-oauth2/03-2-AgentID/README.md)'s
    AgentID flow: change that MCP server's security scheme to **OAuth2**,
    then look up this agent's **Agent ID** in the console and assign it a
    role scoped to `accounts:read` / `loans:read` only. Agent Manager then
    injects `MCP_GATEWAY_URL` and `AMP_AGENTID_CLIENT_*` in place of the
    API key.
-5. For [Module 03, Part A](../../03-agentid-and-oauth2/README.md)'s
+5. For [Module 03, Part A](../../03-agentid-and-oauth2/03-1-OAuth2/README.md)'s
    OAuth2 flow: select **OAuth2** as the agent's security scheme and pick
    the registered Asgardeo key manager — no env var change needed.
 6. To use this agent's manual instrumentation instead of Agent Manager's

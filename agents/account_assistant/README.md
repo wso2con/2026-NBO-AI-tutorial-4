@@ -13,7 +13,7 @@ mode:
 | MCP | `MCP_SERVER_URL` set, `MCP_GATEWAY_URL` unset — calls the Accounts MCP server directly | `MCP_GATEWAY_URL` + `MCP_GATEWAY_API_KEY` set — routed through Agent Manager's MCP gateway as an `x-api-key` header, no per-agent policy | `MCP_GATEWAY_URL` set, `AMP_AGENTID_CLIENT_ID`/`SECRET`/etc. set, `MCP_GATEWAY_API_KEY` unset — routed through the gateway, authenticated with this agent's own AgentID client-credentials as a Bearer token, subject to per-agent tool policy |
 
 Once tool policy is configured on the AgentID this agent authenticates
-with (see [Module 03, Part B](../../03-agentid-and-oauth2/README.md)),
+with (see [Module 03, Part B](../../03-agentid-and-oauth2/03-2-AgentID/README.md)),
 this identity is expected to be **permitted** for `open_account` /
 `transfer_money` / `check_balance`, unlike the Customer Support Agent's.
 
@@ -77,13 +77,13 @@ Steps:
    **API Key** security — no AgentID yet, every agent uses the same key.
    `MCP_GATEWAY_URL` and `MCP_GATEWAY_API_KEY` are then injected by Agent
    Manager, no manual env var entry needed.
-4. For [Module 03, Part B](../../03-agentid-and-oauth2/README.md)'s
+4. For [Module 03, Part B](../../03-agentid-and-oauth2/03-2-AgentID/README.md)'s
    AgentID flow: change that MCP server's security scheme to **OAuth2**,
    then look up this agent's **Agent ID** in the console and assign it a
    role scoped to `accounts:read` / `accounts:write`. Agent Manager then
    injects `MCP_GATEWAY_URL` and `AMP_AGENTID_CLIENT_*` in place of the
    API key.
-5. For [Module 03, Part A](../../03-agentid-and-oauth2/README.md)'s
+5. For [Module 03, Part A](../../03-agentid-and-oauth2/03-1-OAuth2/README.md)'s
    OAuth2 flow: select **OAuth2** as the agent's security scheme and pick
    the registered Asgardeo key manager — no env var change needed.
 6. To use this agent's manual instrumentation instead of Agent Manager's

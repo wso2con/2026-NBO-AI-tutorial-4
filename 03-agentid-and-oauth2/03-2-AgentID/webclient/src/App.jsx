@@ -1,9 +1,13 @@
 import { useRef, useState } from "react";
+import { useAuthContext } from "@asgardeo/auth-react";
 import ChatPane from "./components/ChatPane.jsx";
 import PromptChips from "./components/PromptChips.jsx";
 import HealthField from "./components/HealthField.jsx";
+import SignInGate from "./components/SignInGate.jsx";
+import UserBadge from "./components/UserBadge.jsx";
 import { useHealth } from "./hooks/useHealth.js";
 import { streamChat } from "./lib/streamChat.js";
+import { isAsgardeoConfigured } from "./authConfig.js";
 
 function randomSessionId(prefix) {
   return prefix + "-" + Math.random().toString(36).slice(2, 10);
@@ -13,8 +17,13 @@ let nextMessageId = 1;
 
 const DEFAULT_URL_CS = import.meta.env.VITE_CUSTOMER_SUPPORT_URL || "http://localhost:8000";
 const DEFAULT_URL_AA = import.meta.env.VITE_ACCOUNT_ASSISTANT_URL || "http://localhost:8002";
+const API_KEY_CS = import.meta.env.VITE_CUSTOMER_SUPPORT_API_KEY || "";
+const API_KEY_AA = import.meta.env.VITE_ACCOUNT_ASSISTANT_API_KEY || "";
 
-export default function App() {
+function GovernanceConsole() {
+  const { getAccessToken, state } = useAuthContext();
+  const authed = isAsgardeoConfigured && state.isAuthenticated;
+
   const [urlCs, setUrlCs] = useState(DEFAULT_URL_CS);
   const [urlAa, setUrlAa] = useState(DEFAULT_URL_AA);
 
@@ -41,14 +50,21 @@ export default function App() {
     setMessages((prev) => prev.map((m) => (m.id === id ? { ...m, ...patch } : m)));
   }
 
-  async function runAgentReply(baseUrl, sessionId, text, setMessages) {
+  async function runAgentReply(baseUrl, sessionId, text, setMessages, accessToken, apiKey) {
     const trimmedUrl = baseUrl.trim().replace(/\/+$/, "");
     const id = appendMessage(setMessages, "agent", "");
     updateMessage(setMessages, id, { streaming: true });
 
-    const { text: finalText, outcome } = await streamChat(trimmedUrl, sessionId, text, (partial) => {
-      updateMessage(setMessages, id, { text: partial });
-    });
+    const { text: finalText, outcome } = await streamChat(
+      trimmedUrl,
+      sessionId,
+      text,
+      (partial) => {
+        updateMessage(setMessages, id, { text: partial });
+      },
+      accessToken,
+      apiKey
+    );
 
     updateMessage(setMessages, id, { text: finalText, outcome, streaming: false });
   }
@@ -59,9 +75,19 @@ export default function App() {
     appendMessage(setMessagesCs, "user", text);
     appendMessage(setMessagesAa, "user", text);
     setSendingCompare(true);
+
+    let accessToken;
+    if (authed) {
+      try {
+        accessToken = await getAccessToken();
+      } catch {
+        accessToken = undefined;
+      }
+    }
+
     await Promise.all([
-      runAgentReply(urlCs, sessionsRef.current.cs, text, setMessagesCs),
-      runAgentReply(urlAa, sessionsRef.current.aa, text, setMessagesAa),
+      runAgentReply(urlCs, sessionsRef.current.cs, text, setMessagesCs, accessToken, API_KEY_CS),
+      runAgentReply(urlAa, sessionsRef.current.aa, text, setMessagesAa, accessToken, API_KEY_AA),
     ]);
     setSendingCompare(false);
   }
@@ -76,6 +102,7 @@ export default function App() {
           </div>
           <span className="tag">same prompt, two agent identities &mdash; direct mode vs. AgentID-governed MCP</span>
         </div>
+        <UserBadge />
       </header>
 
       <section className="config" aria-label="Agent endpoints">
@@ -157,7 +184,16 @@ export default function App() {
       <footer>
         Each panel calls its agent&rsquo;s own <code>/chat</code> endpoint &middot; session id persists per pane
         while this page stays open
+        {authed ? <> &middot; Authorization: Bearer token attached per request</> : null}
       </footer>
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    <SignInGate>
+      <GovernanceConsole />
+    </SignInGate>
   );
 }

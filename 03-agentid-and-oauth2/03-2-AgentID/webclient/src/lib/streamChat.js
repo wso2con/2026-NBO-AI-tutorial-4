@@ -3,14 +3,16 @@
 // reply, kept as a parameter so callers don't need to branch on streaming
 // vs non-streaming agents. `accessToken`, when provided, is attached as a
 // Bearer token so the agent can authorize the call against the signed-in
-// Asgardeo user.
-export async function streamChat(baseUrl, sessionId, message, onToken, accessToken) {
+// Asgardeo user. `apiKey`, when provided, is attached as `x-api-key` for
+// agents that require it.
+export async function streamChat(baseUrl, sessionId, message, onToken, accessToken, apiKey) {
   let full = "";
   let outcome = null; // "allowed" | "denied" | null
 
   try {
     const headers = { "Content-Type": "application/json" };
     if (accessToken) headers["Authorization"] = "Bearer " + accessToken;
+    if (apiKey) headers["x-api-key"] = apiKey;
 
     const res = await fetch(baseUrl + "/chat", {
       method: "POST",
