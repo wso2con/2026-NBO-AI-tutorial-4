@@ -54,23 +54,49 @@ isn't in the path at all yet.
 
 ## Step 2 — Register the MCP server at the org level
 
-1. Go to **organization level** → **MCP Servers** → register a new
-   server, pointing at the ngrok URL from the prerequisites
-   (`https://<your-subdomain>.ngrok.io/mcp`).
-2. Set the authentication type to **API Key** (the default scheme) and
-   generate/copy the key. This one key is what every agent in this
-   module authenticates the MCP gateway with — no per-agent identity
-   yet. Note the header name this scheme validates — `x-api-key` — it's
-   different from the LLM gateway's `API-Key` header.
+1. In the console, go to your **organization** (top-left → **Go to
+   organization**), then open **MCP Servers** in the sidebar.
+2. Click **Register MCP Server** and fill in:
+   - **Name** — e.g. `AccountsMCP`
+   - **Handle** — a unique identifier, e.g. `accountsmcp` (auto-fills
+     from Name if left blank)
+3. Under **Endpoints**, click **Add Endpoint** and fill in:
+   - **Endpoint Name** — `main`
+   - **MCP Server Endpoint URL** — the ngrok URL from the prerequisites
+     (`https://<your-subdomain>.ngrok.io/mcp`)
+   - Click **Add Endpoint** again inside the panel to confirm it — the
+     console does a live connectivity check and shows the detected
+     tool count if the URL is reachable.
+4. Click **Create**.
+5. Open the new server and confirm on its **Overview** tab that
+   **Auth Type** shows **API Key** — this is the default scheme, no
+   extra setup needed. Note the header name this scheme validates —
+   `x-api-key` — it's different from the LLM gateway's `API-Key`
+   header.
 
 ## Step 3 — Bind each deployed agent to the MCP server
 
-For each agent (Customer Support and Account Assistant), open its MCP
-configuration in Agent Manager and select the MCP server registered in
-step 2. Agent Manager injects `MCP_GATEWAY_URL` and `MCP_GATEWAY_API_KEY`
-into the running agent itself — no manual `.env` edit, no redeploy of
-code, same pattern as binding an LLM provider in Module 01. Both agents
-end up with the same API key, since neither has its own identity yet.
+For each agent (Customer Support and Account Assistant), open the agent
+in Agent Manager and follow these steps:
+
+1. Go to the agent's project, open the agent, then click **Configure**
+   in the sidebar → **Tool Configurations** tab.
+2. Click **Add Tool Configuration** and pick the MCP server registered
+   in Step 2 (`AccountsMCP`).
+3. The dialog shows **Environment Variable Names** the platform will
+   inject — by default derived from the server name (e.g.
+   `ACCOUNTSMCP_URL` / `ACCOUNTSMCP_API_KEY`). This agent's code reads
+   `MCP_GATEWAY_URL` and `MCP_GATEWAY_API_KEY` instead (see
+   `_build_mcp_client()` in `agent.py`), so **override both names** to:
+   - `MCP_GATEWAY_URL`
+   - `MCP_GATEWAY_API_KEY`
+4. Click **Save**.
+
+Agent Manager injects the actual URL and API key values into the
+running agent at runtime under those names — no manual `.env` edit, no
+redeploy of code, same pattern as binding an LLM provider in Module 01.
+Repeat for the Account Assistant agent. Both agents end up with the
+same API key, since neither has its own identity yet.
 
 Locally (outside Agent Manager), the equivalent is setting
 `MCP_GATEWAY_URL` and `MCP_GATEWAY_API_KEY` by hand in each agent's
