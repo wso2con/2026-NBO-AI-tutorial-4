@@ -86,19 +86,7 @@ def _mint_agentid_token(mcp_gateway_url: str) -> str:
     token, not just before calling the tool. This agent has its own
     AMP_AGENTID_CLIENT_ID/SECRET, so it mints its own token and Agent
     Manager enforces tool policy per that identity, not per a shared secret.
-
-    DEV BYPASS: if AMP_AGENTID_STATIC_TOKEN is set, skip minting entirely
-    and use that token as-is. For environments that can't reach the token
-    endpoint's network (it sits behind restrictions a plain client_credentials
-    call can't get past) - mint the token elsewhere and drop it in here. The
-    token is short-lived (~1hr); re-mint and update the env var when it
-    expires. Never rely on this path outside local/dev testing.
     """
-    static_token = os.environ.get("AMP_AGENTID_STATIC_TOKEN")
-    if static_token:
-        log.warning("_mint_agentid_token: using AMP_AGENTID_STATIC_TOKEN dev bypass, not minting a fresh token")
-        return static_token
-
     client_id = os.environ["AMP_AGENTID_CLIENT_ID"]
     client_secret = os.environ["AMP_AGENTID_CLIENT_SECRET"]
     token_endpoint = os.environ["AMP_AGENTID_TOKEN_ENDPOINT"]
