@@ -19,6 +19,8 @@ set — no code change, no separate "stage" build:
 
 from __future__ import annotations
 
+import base64
+import json
 import logging
 import os
 from contextlib import asynccontextmanager
@@ -26,7 +28,7 @@ from typing import Any
 
 import requests
 from dotenv import load_dotenv
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from langchain_core.messages import AIMessage, BaseMessage, HumanMessage
 from langchain_mcp_adapters.client import MultiServerMCPClient
@@ -227,6 +229,50 @@ def health() -> dict[str, Any]:
     return _ready_payload()
 
 
+# Confirmed via header-name discovery logging: the gateway forwards the
+# caller's OAuth identity token in this header (not `Authorization`).
+IDENTITY_HEADER = "x-forwarded-authorization"
+
+
+def _decode_jwt_claims(token: str) -> dict[str, Any] | None:
+    """Decode a JWT's payload claims without verifying the signature.
+
+    This is for logging/debugging identity only - never use the returned
+    claims to make an authorization decision, since they're unverified.
+    """
+    parts = token.removeprefix("Bearer ").strip().split(".")
+    if len(parts) != 3:
+        return None
+    payload = parts[1]
+    padded = payload + "=" * (-len(payload) % 4)
+    try:
+        return json.loads(base64.urlsafe_b64decode(padded))
+    except (ValueError, json.JSONDecodeError):
+        return None
+
+
+def _log_identity_header(request: Request, sid: str) -> None:
+    """Log the caller identity (username, org_id) from the Asgardeo access
+    token forwarded in x-forwarded-authorization. Claims are unverified
+    (no signature check here) - fine for log correlation, not for
+    authorization decisions. Never logs the raw token itself.
+    """
+    token = request.headers.get(IDENTITY_HEADER)
+    if not token:
+        log.info("session=%s no %s header present", sid, IDENTITY_HEADER)
+        return
+
+    claims = _decode_jwt_claims(token)
+    if claims is None:
+        log.warning("session=%s %s present but not a decodable JWT", sid, IDENTITY_HEADER)
+        return
+
+    log.info(
+        "session=%s caller username=%s org_id=%s",
+        sid, claims.get("username"), claims.get("org_id"),
+    )
+
+
 def _final_text(messages: list[BaseMessage]) -> str:
     for msg in reversed(messages):
         if isinstance(msg, AIMessage):
@@ -243,11 +289,12 @@ def _final_text(messages: list[BaseMessage]) -> str:
 
 
 @app.post("/chat", response_model=ChatResponse)
-async def chat(req: ChatRequest) -> ChatResponse:
+async def chat(req: ChatRequest, request: Request) -> ChatResponse:
     if not req.message.strip():
         return ChatResponse(response="How can I help you today?")
 
     sid = req.session_id or "_anonymous_"
+    _log_identity_header(request, sid)
     turn: list[BaseMessage] = [HumanMessage(content=req.message)]
     history = SESSIONS.get(sid, []) + turn
 
