@@ -19,7 +19,7 @@ function SupportConsole() {
   const { getAccessToken, state } = useAuthContext();
   const authed = isAsgardeoConfigured && state.isAuthenticated;
   const [url, setUrl] = useState(agentBaseUrl);
-  const health = useHealth(() => url);
+  const health = useHealth(() => url, { apiKey });
   const sessionRef = useRef(randomSessionId("web-support"));
 
   const [messages, setMessages] = useState([]);

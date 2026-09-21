@@ -27,8 +27,8 @@ function GovernanceConsole() {
   const [urlCs, setUrlCs] = useState(DEFAULT_URL_CS);
   const [urlAa, setUrlAa] = useState(DEFAULT_URL_AA);
 
-  const healthCs = useHealth(() => urlCs);
-  const healthAa = useHealth(() => urlAa);
+  const healthCs = useHealth(() => urlCs, { apiKey: API_KEY_CS });
+  const healthAa = useHealth(() => urlAa, { apiKey: API_KEY_AA });
 
   const sessionsRef = useRef({
     cs: randomSessionId("web-cmp-cs"),
