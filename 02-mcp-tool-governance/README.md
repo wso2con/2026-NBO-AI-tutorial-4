@@ -46,7 +46,7 @@ either one with a prompt that reaches the MCP server:
 ```bash
 curl -X POST http://localhost:8000/chat \
   -H 'Content-Type: application/json' \
-  -d '{"message": "What accounts does customer cust-1 have?", "session_id": "gap-1"}'
+  -d '{"message": "What accounts does customer alice have?", "session_id": "gap-1"}'
 ```
 
 This succeeds by talking straight to `MCP_SERVER_URL` — Agent Manager
@@ -117,12 +117,12 @@ agent's page in the console and copy the URL shown on its environment's
 # Customer Support Agent — now via the gateway
 curl -X POST http://localhost:8000/chat \
   -H 'Content-Type: application/json' \
-  -d '{"message": "Please open a new savings account for customer cust-2.", "session_id": "gate-1"}'
+  -d '{"message": "Please open a new savings account for customer ravi.", "session_id": "gate-1"}'
 
 # Account Assistant Agent — same gateway, same key
 curl -X POST http://localhost:8002/chat \
   -H 'Content-Type: application/json' \
-  -d '{"message": "What is the status of the loan application for customer cust-2?", "session_id": "gate-2"}'
+  -d '{"message": "What is the status of the loan application for customer ravi?", "session_id": "gate-2"}'
 ```
 
 Both succeed. The point of this module is only that both agents now

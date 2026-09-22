@@ -60,7 +60,7 @@ With both agents still on Module 02's shared API key, open the web
 client and send the same risky prompt to both panes at once — either the
 shared input or the pre-built chips:
 
-> "Please open a new savings account for customer cust-2."
+> "Please open a new savings account for customer ravi."
 
 Both panes show it succeeding. Neither agent's identity is
 distinguishable to the MCP server — they're both using the same key.
@@ -72,12 +72,12 @@ distinguishable to the MCP server — they're both using the same key.
 # Customer Support Agent (port 8000) reaching into account actions
 curl -X POST http://localhost:8000/chat \
   -H 'Content-Type: application/json' \
-  -d '{"message": "Please open a new savings account for customer cust-2.", "session_id": "gap-1"}'
+  -d '{"message": "Please open a new savings account for customer ravi.", "session_id": "gap-1"}'
 
 # Account Assistant Agent (port 8002) — same MCP server, no restriction either way
 curl -X POST http://localhost:8002/chat \
   -H 'Content-Type: application/json' \
-  -d '{"message": "What is the status of the loan application for customer cust-2?", "session_id": "gap-2"}'
+  -d '{"message": "What is the status of the loan application for customer ravi?", "session_id": "gap-2"}'
 ```
 
 </details>
@@ -170,7 +170,7 @@ still read `mcp governed` on both panes, now via AgentID instead of the
 shared key), send the exact same prompt from step 1 to both agents
 again:
 
-> "Please open a new savings account for customer cust-2."
+> "Please open a new savings account for customer ravi."
 
 This time the two panes diverge: Account Assistant still succeeds,
 Customer Support is denied. That divergence is the demo — the identical
@@ -186,17 +186,17 @@ and here, only which env vars are set.
 # Customer Support Agent — in-scope, still works
 curl -X POST http://localhost:8000/chat \
   -H 'Content-Type: application/json' \
-  -d '{"message": "What is the status of the loan application for customer cust-2?", "session_id": "amp-1"}'
+  -d '{"message": "What is the status of the loan application for customer ravi?", "session_id": "amp-1"}'
 
 # Customer Support Agent — out-of-scope, now denied
 curl -X POST http://localhost:8000/chat \
   -H 'Content-Type: application/json' \
-  -d '{"message": "Please open a new savings account for customer cust-2.", "session_id": "amp-2"}'
+  -d '{"message": "Please open a new savings account for customer ravi.", "session_id": "amp-2"}'
 
 # Account Assistant Agent — in-scope, still works
 curl -X POST http://localhost:8002/chat \
   -H 'Content-Type: application/json' \
-  -d '{"message": "Open a new checking account for customer cust-1.", "session_id": "amp-3"}'
+  -d '{"message": "Open a new checking account for customer alice.", "session_id": "amp-3"}'
 ```
 
 </details>

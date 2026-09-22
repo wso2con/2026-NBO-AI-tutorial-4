@@ -167,7 +167,7 @@ function GovernanceConsole() {
             type="text"
             value={inputCompare}
             onChange={(e) => setInputCompare(e.target.value)}
-            placeholder="e.g. Please open a new savings account for customer cust-2"
+            placeholder="e.g. Please open a new savings account for customer ravi"
             autoComplete="off"
           />
           <button type="submit" disabled={sendingCompare}>

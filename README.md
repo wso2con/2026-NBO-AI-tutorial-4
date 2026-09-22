@@ -13,7 +13,7 @@ Four modules, each adding a governance layer on top of the last —
 |---|---|---|---|
 | [01 — LLM Governance](01-llm-governance/README.md) | ~20 min | What the model says and costs: PII masking, cost-based rate limiting, per-agent prompt decorators on the LLM gateway. | Same LLM gateway, two agents, two different appended compliance/audit lines — purely from which decorator is attached. |
 | [02 — MCP Tool Governance](02-mcp-tool-governance/README.md) | ~15 min | Routes MCP tool calls through Agent Manager's MCP gateway (shared API Key). No per-agent policy yet. | Both agents now reach the Accounts MCP server only through the gateway — but still share one key, so tool access is still unrestricted. |
-| 03 — AgentID and OAuth2 ([Part A](03-agentid-and-oauth2/03-1-OAuth2/README.md) · [Part B](03-agentid-and-oauth2/03-2-AgentID/README.md)) | ~35 min | **Part A:** OAuth2/Asgardeo secures the `/chat` endpoint itself (caller identity). **Part B:** each agent gets its own AgentID identity; Agent Manager's MCP gateway enforces per-agent, per-tool policy. | Identical prompt ("open a savings account for cust-2") sent to both agents: Account Assistant succeeds, Customer Support is now **denied** — same code, only the AgentID role differs. |
+| 03 — AgentID and OAuth2 ([Part A](03-agentid-and-oauth2/03-1-OAuth2/README.md) · [Part B](03-agentid-and-oauth2/03-2-AgentID/README.md)) | ~35 min | **Part A:** OAuth2/Asgardeo secures the `/chat` endpoint itself (caller identity). **Part B:** each agent gets its own AgentID identity; Agent Manager's MCP gateway enforces per-agent, per-tool policy. | Identical prompt ("open a savings account for ravi") sent to both agents: Account Assistant succeeds, Customer Support is now **denied** — same code, only the AgentID role differs. |
 | [04 — Agent Catalog](04-agent-catalog/README.md) | ~15 min | Publishing a governed agent's build as a reusable, versioned Agent Kind. Code is reused; configuration, secrets, and AgentID identity are not. | A new agent created from the Kind starts with **zero MCP tool access** until its own AgentID is walked through Module 03 Part B again. |
 
 See [`demo_script.md`](demo_script.md) for the exact prompts to run live at
@@ -102,7 +102,7 @@ Requires the MCP server from step 1 running locally. Talk to an agent with:
 ```bash
 curl -X POST http://localhost:8000/chat \
   -H 'Content-Type: application/json' \
-  -d '{"message": "What accounts does customer cust-1 have?", "session_id": "demo-1"}'
+  -d '{"message": "What accounts does customer alice have?", "session_id": "demo-1"}'
 ```
 
 Reuse the same `session_id` across calls to keep conversation history.

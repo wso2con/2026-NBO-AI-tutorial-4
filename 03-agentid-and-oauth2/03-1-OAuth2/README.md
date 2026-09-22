@@ -68,7 +68,7 @@ Manager listener yet:
 ```bash
 curl -N -X POST "$AGENT_URL/chat" \
   -H 'Content-Type: application/json' \
-  -d '{"message": "What accounts does customer cust-1 have?", "session_id": "demo-1"}'
+  -d '{"message": "What accounts does customer alice have?", "session_id": "demo-1"}'
 ```
 
 This succeeds with no credentials at all. Keep this response in mind —
@@ -90,7 +90,7 @@ gateway URL, still with no token:
 ```bash
 curl -N -X POST "$AGENT_URL/chat" \
   -H 'Content-Type: application/json' \
-  -d '{"message": "What accounts does customer cust-1 have?", "session_id": "demo-1"}'
+  -d '{"message": "What accounts does customer alice have?", "session_id": "demo-1"}'
 ```
 
 Expect a `401`. Same request, same agent code, same conversation history
@@ -143,7 +143,7 @@ npm run dev
 Open `http://localhost:5174`. The `SignInGate` component (see
 [`src/components/SignInGate.jsx`](webclient-support/src/components/SignInGate.jsx))
 blocks the chat pane until Asgardeo sign-in completes. Sign in, and the
-same "What accounts does customer cust-1 have?" prompt that failed with a
+same "What accounts does customer alice have?" prompt that failed with a
 bare `401` in step 6 now succeeds — this time carrying the access token
 Asgardeo issued to the browser session as a `Bearer` header on every
 `/chat` call (see
