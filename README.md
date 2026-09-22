@@ -187,38 +187,3 @@ env-var-injection table are in each agent's own README
 and in [Module 01](01-llm-governance/README.md), [Module 02](02-mcp-tool-governance/README.md),
 and Module 03 ([Part A](03-agentid-and-oauth2/03-1-OAuth2/README.md) ·
 [Part B](03-agentid-and-oauth2/03-2-AgentID/README.md)).
-
-## Demo script
-
-See `demo_script.md` for sample prompts to use live, showing the
-before/after contrast at the tool-access-control step.
-
-## Notes / things to verify against your Agent Manager instance
-
-- The LLM gateway is wired as an OpenAI-compatible client with `base_url`
-  set up to the context path, `api_key="unused"` as a sentinel, and
-  `default_headers={"API-Key": <token>, "Authorization": ""}` - the
-  `Authorization` header must be explicitly blanked because the openai SDK
-  sets it by default from `api_key` and does not stop just because
-  `API-Key` is also present. This is the pattern verified against a real
-  working Agent Manager sample agent - confirm it still matches your
-  instance.
-- The MCP gateway supports two auth modes in this demo: a shared static
-  API key sent as an `x-api-key` header (`MCP_GATEWAY_API_KEY`, Module
-  02 — note this is a different header name than the LLM gateway's
-  `API-Key`), or per-agent AgentID OAuth2 client-credentials (Module 03)
-  — each agent
-  POSTs to `AMP_AGENTID_TOKEN_ENDPOINT` with its own
-  `client_id`/`client_secret`, requesting a token scoped to
-  `MCP_GATEWAY_URL` via the `resource` parameter (RFC 8707), then sends
-  that token as `Authorization: Bearer <token>` on MCP calls. AgentID
-  connectivity verified working against a real MCP gateway route for
-  basic connectivity; the tool-access policy itself (denying Customer
-  Support's `open_account`/`transfer_money`) was NOT yet enforced when
-  last tested against `.../default/accounts/mcp` — confirm policy is
-  configured on the Agent Manager side before demoing the denial.
-- Governed-mode denial handling (Customer Support Agent only) catches
-  generic exceptions from the MCP tool call and logs/returns a
-  governance-style fallback message - once you test against the real
-  gateway with policy enforced, tighten this to match its actual error
-  shape/status code if it differs.
