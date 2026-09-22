@@ -325,4 +325,4 @@ a guardrail - that needs a second provider.
 
 ---
 
-Previous: [Module 04 - External Agents](README.md)
+Previous: [Session 1, Module 04 - External Agents](https://github.com/wso2con/2026-NBO-AI-tutorial-3/blob/main/04-external-agents/README.md)
